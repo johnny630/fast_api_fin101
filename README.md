@@ -14,3 +14,7 @@ https://github.com/jazzband/pip-tools
 3. `pip-compile` or `python -m piptools compile` will create `requirements.txt` file.
 4. `pip-compile dev-requirements.in` will create `dev-requirements.txt` file.
 5. `pip-sync dev-requirements.txt requirements.txt` 正式安裝 (只下`pip-sync` 只會執行requirements.txt)
+
+## FastAPI
+Create a main.py and simple ping API.
+`uvicorn main:app --port 8000`  main is python main.py, app is FastAPI module
