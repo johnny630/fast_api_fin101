@@ -18,3 +18,4 @@ https://github.com/jazzband/pip-tools
 ## FastAPI
 Create a main.py and simple ping API.
 `uvicorn main:app --port 8000`  main is python main.py, app is FastAPI module
+`uvicorn main:app --port 8000 --reload` development model, when code change server will auto reload.
