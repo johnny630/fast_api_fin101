@@ -1,7 +1,10 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Path
 from pydantic import BaseModel, Field, HttpUrl
+from typing import Annotated
 
-from datetime import datetime
+from datetime import datetime, time, timedelta
+from uuid import UUID
+import uuid
 
 app = FastAPI()
 
@@ -22,22 +25,29 @@ class Item(BaseModel):
   tax: float | None = None
   images: list[Image]
 
-  model_config = {
-    'json_schema_extra': {
-      'examples': [
-        {
-          'name': 'Johnny',
-          'description': 'params example',
-          'price': 35.9,
-          'tax': 3.59
-        }
-      ]
-    }
-  }
-
 @app.post('/items')
 async def create_item(item: Item):
   return item
+
+@app.put("/items/{item_id}")
+async def read_items(
+    item_id: UUID = Path(description=uuid.uuid4()),
+    start_datetime: Annotated[datetime | None, Body()] = None,
+    end_datetime: Annotated[datetime | None, Body()] = None,
+    repeat_at: Annotated[time | None, Body()] = None,
+    process_after: Annotated[timedelta | None, Body()] = None,
+):
+    start_process = start_datetime + process_after
+    duration = end_datetime - start_process
+    return {
+        "item_id": item_id,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime,
+        "repeat_at": repeat_at,
+        "process_after": process_after,
+        "start_process": start_process,
+        "duration": duration,
+    }
 
 @app.get("/ping")
 async def ping():
