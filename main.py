@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Body
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
 from datetime import datetime
 
@@ -12,8 +12,8 @@ BOOKS = [
 ]
 
 class Image(BaseModel):
-    url: HttpUrl
-    name: str
+    url: HttpUrl = Field(examples=['https://google.com'])
+    name: str = Field(examples=['google'])
 
 class Item(BaseModel):
   name: str
@@ -21,6 +21,19 @@ class Item(BaseModel):
   price: float
   tax: float | None = None
   images: list[Image]
+
+  model_config = {
+    'json_schema_extra': {
+      'examples': [
+        {
+          'name': 'Johnny',
+          'description': 'params example',
+          'price': 35.9,
+          'tax': 3.59
+        }
+      ]
+    }
+  }
 
 @app.post('/items')
 async def create_item(item: Item):
