@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Body
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 from datetime import datetime
 
@@ -11,11 +11,16 @@ BOOKS = [
   {'title': 'rachel book', 'price': 12, 'auth': 'rachel'},
 ]
 
+class Image(BaseModel):
+    url: HttpUrl
+    name: str
+
 class Item(BaseModel):
   name: str
   description: str | None = None
   price: float
   tax: float | None = None
+  images: list[Image]
 
 @app.post('/items')
 async def create_item(item: Item):
