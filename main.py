@@ -25,8 +25,13 @@ class Item(BaseModel):
   tax: float | None = None
   images: list[Image]
 
-@app.post('/items')
-async def create_item(item: Item) -> Item:
+class ItemOut(BaseModel):
+  name: str
+  price: float
+  tax: float | None = None
+
+@app.post('/items', response_model=ItemOut, response_model_exclude_none=True)
+async def create_item(item: Item):
   return item
 
 @app.put("/items/{item_id}")
