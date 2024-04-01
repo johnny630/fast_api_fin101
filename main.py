@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Body, Path, Cookie, Header
 from pydantic import BaseModel, Field, HttpUrl
-from typing import Annotated
+from typing import Annotated, Any
 
 from datetime import datetime, time, timedelta
 from uuid import UUID
@@ -25,8 +25,8 @@ class Item(BaseModel):
   tax: float | None = None
   images: list[Image]
 
-@app.post('/items')
-async def create_item(item: Item):
+@app.post('/items', response_model=Item)
+async def create_item(item: Item) -> Any:
   return item
 
 @app.put("/items/{item_id}")
