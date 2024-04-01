@@ -25,12 +25,7 @@ class Item(BaseModel):
   tax: float | None = None
   images: list[Image]
 
-class ItemOut(BaseModel):
-  name: str
-  price: float
-  tax: float | None = None
-
-@app.post('/items', response_model=ItemOut, response_model_exclude_none=True)
+@app.post('/items', response_model=Item, response_model_include={'name', 'description', 'price'})
 async def create_item(item: Item):
   return item
 
