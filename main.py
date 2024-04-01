@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Path, Cookie
+from fastapi import FastAPI, Body, Path, Cookie, Header
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated
 
@@ -32,6 +32,7 @@ async def create_item(item: Item):
 @app.put("/items/{item_id}")
 async def read_items(
     item_id: UUID = Path(description=uuid.uuid4()),
+    user_agent: Annotated[str | None, Header()] = None,
     ads_id: Annotated[str | None, Cookie()] = None,
     start_datetime: Annotated[datetime | None, Body()] = None,
     end_datetime: Annotated[datetime | None, Body()] = None,
@@ -49,6 +50,7 @@ async def read_items(
         "start_process": start_process,
         "duration": duration,
         "ads_id": ads_id,
+        "user_agent": user_agent,
     }
 
 @app.get("/ping")
