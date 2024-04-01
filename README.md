@@ -2,7 +2,7 @@
 fast api fin101
 
 ## Environment
-python: 3.10.2 + pyenv + pip-tools
+python: 3.10.13 + pyenv + pip-tools
 
 `python3 -m venv .venv`
 `. .venv/bin/activate` activate the corresponding environment

@@ -1,4 +1,6 @@
 from fastapi import FastAPI, Body
+from pydantic import BaseModel
+
 from datetime import datetime
 
 app = FastAPI()
@@ -8,6 +10,16 @@ BOOKS = [
   {'title': 'johnny book2', 'price': 30, 'auth': 'johnny'},
   {'title': 'rachel book', 'price': 12, 'auth': 'rachel'},
 ]
+
+class Item(BaseModel):
+  name: str
+  description: str | None = None
+  price: float
+  tax: float | None = None
+
+@app.post('/items')
+async def create_item(item: Item):
+  return item
 
 @app.get("/ping")
 async def ping():
