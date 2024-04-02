@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Path, Cookie, Header, status
+from fastapi import FastAPI, Body, Path, Cookie, Header, Form, status
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
 
@@ -52,6 +52,10 @@ async def read_items(
         "ads_id": ads_id,
         "user_agent": user_agent,
     }
+
+@app.post("/login/")
+async def login(username: str = Form(), password: str = Form()):
+    return {'username': username, 'password': password}
 
 @app.get("/ping")
 async def ping():
