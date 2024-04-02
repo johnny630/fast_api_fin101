@@ -1,4 +1,8 @@
-from fastapi import FastAPI, Body, Path, Cookie, Header, Form, File, HTTPException, UploadFile, status
+from fastapi import (
+  FastAPI, Body, Path, Cookie, Header, Form, File,
+  Request, HTTPException, UploadFile, status
+)
+from fastapi.responses import JSONResponse
 from starlette.responses import HTMLResponse
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
@@ -54,14 +58,21 @@ async def read_items(
         "user_agent": user_agent,
     }
 
+class UnicornException(Exception):
+  def __init__(self, name: str):
+    self.name = name
+
+@app.exception_handler(UnicornException)
+async def unicorn_exception_handler(request: Request, exc: UnicornException):
+  return JSONResponse(
+    status_code=418,
+    content={"message": f"Oops! {exc.name} did something. There goes a rainbow..."},
+  )
+
 @app.post("/login/")
 async def login(username: str = Form(), password: str = Form()):
     if username != 'johnny':
-      raise HTTPException(
-        status.HTTP_400_BAD_REQUEST,
-        detail=f"The username {username} is invalid",
-        headers={"X-Error": "Extra error information"},
-      )
+      raise UnicornException(name=username)
 
     return {'username': username, 'password': password}
 
