@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Body, Path, Cookie, Header, Form, status
+from fastapi import FastAPI, Body, Path, Cookie, Header, Form, File, UploadFile, status
+from starlette.responses import HTMLResponse
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
 
@@ -93,3 +94,18 @@ async def delete_book(delete_book=Body()):
     if BOOKS[i]['title'].casefold() == delete_book['title'].casefold():
         BOOKS.pop(i)
         break
+
+@app.post("/files/")
+async def create_file(file: bytes | None = File(default=None)):
+    if not file:
+        return {"message": "No file sent"}
+    else:
+        return {"file_size": len(file)}
+
+
+@app.post("/upload_file/")
+async def create_upload_file(file: UploadFile | None = None):
+    if not file:
+        return {"message": "No upload file sent"}
+    else:
+        return {"filename": file.filename}
