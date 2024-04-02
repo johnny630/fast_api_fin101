@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Path, Cookie, Header, Form, File, UploadFile, status
+from fastapi import FastAPI, Body, Path, Cookie, Header, Form, File, HTTPException, UploadFile, status
 from starlette.responses import HTMLResponse
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
@@ -56,6 +56,13 @@ async def read_items(
 
 @app.post("/login/")
 async def login(username: str = Form(), password: str = Form()):
+    if username != 'johnny':
+      raise HTTPException(
+        status.HTTP_400_BAD_REQUEST,
+        detail=f"The username {username} is invalid",
+        headers={"X-Error": "Extra error information"},
+      )
+
     return {'username': username, 'password': password}
 
 @app.get("/ping")
