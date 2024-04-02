@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body, Path, Cookie, Header
+from fastapi import FastAPI, Body, Path, Cookie, Header, status
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
 
@@ -25,11 +25,11 @@ class Item(BaseModel):
   tax: float | None = None
   images: list[Image]
 
-@app.post('/items', response_model=Item, response_model_exclude={'tax', 'images'})
+@app.post('/items', response_model=Item, response_model_exclude={'tax', 'images'}, status_code=status.HTTP_201_CREATED)
 async def create_item(item: Item):
   return item
 
-@app.put("/items/{item_id}")
+@app.put("/items/{item_id}", status_code=status.HTTP_200_OK)
 async def read_items(
     item_id: UUID = Path(description=uuid.uuid4()),
     user_agent: Annotated[str | None, Header()] = None,
