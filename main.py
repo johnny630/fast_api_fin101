@@ -1,6 +1,7 @@
 from fastapi import (
   FastAPI, Body, Path, Cookie, Header, Form, File,
-  Request, HTTPException, UploadFile, status
+  Request, HTTPException, UploadFile, status,
+  Depends
 )
 from fastapi.responses import PlainTextResponse
 from fastapi.exceptions import HTTPException, RequestValidationError
@@ -107,6 +108,20 @@ async def patch_update_plan(plan_id: str, plan: Plan):
 # async def validation_exception_handler(request, exc):
 #     return PlainTextResponse(str(exc), status_code=400)
 
+async def common_params(
+  q: str | None = None,
+  skip: int = 0,
+  limit: int = 100
+):
+  return {'q': q, 'skip': skip, 'limit': limit}
+
+@app.get('/query1/', tags=['Dependencies'])
+async def query1(commons: dict = Depends(common_params)):
+  return commons
+
+@app.get('/query2/', tags=['Dependencies'])
+async def query2(commons: dict = Depends(common_params)):
+  return commons
 
 @app.post("/login/")
 async def login(username: str = Form(), password: str = Form()):
