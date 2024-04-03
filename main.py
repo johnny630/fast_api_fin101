@@ -5,6 +5,7 @@ from fastapi import (
 from fastapi.responses import PlainTextResponse
 from fastapi.exceptions import HTTPException, RequestValidationError
 from starlette.responses import HTMLResponse
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
 
@@ -59,13 +60,52 @@ async def read_items(
         "user_agent": user_agent,
     }
 
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request, exc):
-    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
+class Plan(BaseModel):
+  name: str | None = None
+  description: str | None = None
+  price: float | None = None
+  tax: float = 10.5
+  tags: list[str] = []
+  start_datetime: datetime | None = None
+  process_after: timedelta | None = None # detail ref: https://en.wikipedia.org/wiki/ISO_8601
+  after_datetime: datetime | None = None
 
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
-    return PlainTextResponse(str(exc), status_code=400)
+plans = {
+  "foo": {"name": "Foo", "price": 50.2},
+  "bar": {"name": "Bar", "description": "The bartenders", "price": 62, "tax": 20.2},
+  "baz": {"name": "Baz", "description": None, "price": 50.2, "tax": 10.5, "tags": []},
+}
+
+@app.get("/plans/{plan_id}", response_model=Plan, tags=['plans'])
+async def read_plan(plan_id: str):
+    return plans[plan_id]
+
+@app.put('/plans/{plan_id}', response_model=Plan, tags=['plans'])
+async def update_plan(plan_id: str, plan: Plan):
+  if plan.start_datetime and plan.process_after:
+    plan.after_datetime = plan.start_datetime + plan.process_after
+  update_plan_encoded = jsonable_encoder(plan)
+  plans[plan_id] = jsonable_encoder(plan)
+  return update_plan_encoded
+
+@app.patch('/plans/{plan_id}', response_model=Plan, tags=['plans'])
+async def patch_update_plan(plan_id: str, plan: Plan):
+  plan_model = Plan(**plans[plan_id])
+
+  if plan.start_datetime and plan.process_after:
+    plan.after_datetime = plan.start_datetime + plan.process_after
+  update_data = plan.model_dump(exclude_unset=True)
+  updated_plan = plan_model.model_copy(update=update_data, deep=True)
+  plans[plan_id] = jsonable_encoder(updated_plan)
+  return plans[plan_id]
+
+# @app.exception_handler(HTTPException)
+# async def http_exception_handler(request, exc):
+#     return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
+
+# @app.exception_handler(RequestValidationError)
+# async def validation_exception_handler(request, exc):
+#     return PlainTextResponse(str(exc), status_code=400)
 
 
 @app.post("/login/")
