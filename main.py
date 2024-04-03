@@ -10,6 +10,7 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
 
+from dataclasses import dataclass
 from datetime import datetime, time, timedelta
 from uuid import UUID
 import uuid
@@ -114,11 +115,12 @@ async def common_params(
   limit: int = 100
 ):
   return {'q': q, 'skip': skip, 'limit': limit}
+
+@dataclass
 class CommonPrams:
-  def __init__(self, q: str | None = None, skip: int = 0, limit: int = 100):
-    self.q = q
-    self.skip = skip
-    self.limit = limit
+  q: str | None = None
+  skip: int = 0,
+  limit: int = 100
 
 @app.get('/query1/', tags=['Dependencies'])
 async def query1(commons: CommonPrams = Depends()):
