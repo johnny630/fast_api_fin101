@@ -114,13 +114,18 @@ async def common_params(
   limit: int = 100
 ):
   return {'q': q, 'skip': skip, 'limit': limit}
+class CommonPrams:
+  def __init__(self, q: str | None = None, skip: int = 0, limit: int = 100):
+    self.q = q
+    self.skip = skip
+    self.limit = limit
 
 @app.get('/query1/', tags=['Dependencies'])
-async def query1(commons: dict = Depends(common_params)):
+async def query1(commons: CommonPrams = Depends()):
   return commons
 
 @app.get('/query2/', tags=['Dependencies'])
-async def query2(commons: dict = Depends(common_params)):
+async def query2(commons: CommonPrams = Depends()):
   return commons
 
 @app.post("/login/")
