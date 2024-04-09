@@ -215,9 +215,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
   encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
   return encoded_jwt
 
-def fake_hash_password(password: str):
-  return "fakehashed" + password
-
 @app.post("/token", tags=['user'])
 async def login(form_data: OAuth2PasswordRequestForm = Depends()) -> Token:
   user = authenticate_user(fake_users_db, form_data.username, form_data.password)
@@ -238,12 +235,6 @@ def get_user(db, username: str):
     if username in db:
         user_dict = db[username]
         return UserInDB(**user_dict)
-
-def fake_decode_token(token):
-    # This doesn't provide any security at all
-    # Check the next version
-    user = get_user(fake_users_db, token)
-    return user
 
 async def get_current_user(token: str = Depends(o_auth2_schema)):
     credentials_exception = HTTPException(
