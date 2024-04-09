@@ -37,6 +37,14 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 # app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
 app = FastAPI()
 
+@app.middleware('http')
+async def add_process_time_header(request: Request, call_next):
+    start_time = datetime.now()
+    response = await call_next(request)
+    process_time = datetime.now() - start_time
+    response.headers['X-Process-Time'] = str(process_time)
+    return response
+
 BOOKS = [
   {'title': 'johnny book', 'price': 35, 'auth': 'johnny'},
   {'title': 'johnny book2', 'price': 30, 'auth': 'johnny'},
