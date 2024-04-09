@@ -8,6 +8,7 @@ from fastapi.exceptions import HTTPException, RequestValidationError
 from starlette.responses import HTMLResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Annotated, Any
 
@@ -36,6 +37,18 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
 @app.middleware('http')
 async def add_process_time_header(request: Request, call_next):
