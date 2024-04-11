@@ -19,3 +19,24 @@ https://github.com/jazzband/pip-tools
 Create a main.py and simple ping API.
 `uvicorn main:app --port 8000`  main is python main.py, app is FastAPI module
 `uvicorn main:app --port 8000 --reload` development model, when code change server will auto reload.
+
+## Alembic
+Create SQLModel (Notice: circular import problem)
+# https://sqlmodel.tiangolo.com/tutorial/code-structure/#make-circular-imports-work
+
+```shell
+pip install alembic
+
+alembic init migrations
+```
+Then see the https://github.com/tiangolo/sqlmodel/issues/85 to revise code
+
+Then continue run commands
+```shell
+alembic revision --autogenerate -m "init users and items table"
+alembic upgrade head
+```
+
+If you want to downgrade
+`alembic downgrade -1`
+
