@@ -20,6 +20,8 @@ if config.config_file_name is not None:
 # New (be sure to import all models you need migrated)
 from db_models.user import User
 from db_models.item import Item
+from db_models.stock import Stock
+from db_models.user_stock_link import UserStockLink
 
 # add your model's MetaData object here
 # for 'autogenerate' support
