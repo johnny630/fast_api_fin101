@@ -10,6 +10,7 @@ class Stock(SQLModel, table=True):
     __tablename__ = 'stocks'
 
     id: int | None = Field(default=None, primary_key=True)
+    stock_id: str = Field(index=True, unique=True)
     name: str = Field(index=True, unique=True)
 
     users: list['User'] = Relationship(back_populates='stocks', link_model=UserStockLink)
