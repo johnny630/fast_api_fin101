@@ -18,6 +18,7 @@ from sqlmodel import (
 )
 from db_models.user import User
 from db_models.item import Item
+from db_models.stock import Stock
 from database import engine
 
 def create_user():
@@ -174,6 +175,57 @@ def get_relationship_object1():
 
         item = user.items[0]
         print("Item's owner:", item.owner)
+
+def create_many_to_many1():
+    with Session(engine) as db:
+        stock_2330 = Stock(stock_id='2330', name='台積電')
+        stock_2317 = Stock(stock_id='2317', name='鴻海')
+
+        user1 = User(
+            email='many_to_many1@test.com',
+            age=20,
+            hashed_password='1234',
+            stocks=[stock_2330]
+        )
+        user2 = User(
+            email='many_to_many2@test.com',
+            age=49,
+            hashed_password='1234',
+            stocks=[stock_2317]
+        )
+        user3 = User(
+            email='many_to_many3@test.com',
+            age=35,
+            hashed_password='1234',
+            stocks=[stock_2317, stock_2330]
+        )
+        db.add_all([user1, user2, user3])
+        db.commit()
+
+        db.refresh(user1)
+        db.refresh(user2)
+        db.refresh(user3)
+
+        for user in [user1, user2, user3]:
+            print("User: ", user, "/ stocks: ", user.stocks)
+
+def update_many_to_many1():
+    with Session(engine) as db:
+        stock = db.exec(
+            select(Stock).where(Stock.stock_id == '2330')
+        ).one()
+
+        user2 = db.exec(
+            select(User).where(User.email== 'many_to_many2@test.com')
+        ).one()
+        user3 = db.exec(
+            select(User).where(User.email== 'many_to_many3@test.com')
+        ).one()
+
+        stock.users.append(user2)
+        stock.users.remove(user3)
+        db.add(stock)
+        db.commit()
 
 
 if __name__ == "__main__":
