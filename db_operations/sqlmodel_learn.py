@@ -1,5 +1,6 @@
 import sys
 import os
+from rich import print
 
 # console reload
 # import importlib
