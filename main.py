@@ -20,6 +20,8 @@ from datetime import datetime, time, timedelta, timezone
 from uuid import UUID
 import uuid
 
+from celery import Celery
+
 # to get a string like this run:
 # openssl rand -hex 32
 SECRET_KEY = "e11d16c3a987add05c4b4636e8a2b2e2500be52b24dfd1ae6a7c7e8f8fc85096"
@@ -37,6 +39,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
 app = FastAPI()
+
+# You can run `celery -A main.celery worker --loglevel=info` command in terminal
+# It will launch Celery
+# Run flower `celery -A main.celery flower --port=5555`
+celery = Celery(
+    __name__,
+    broker="redis://127.0.0.1:6379/1",
+    backend="redis://127.0.0.1:6379/2"
+)
+
 
 origins = [
     "http://localhost",
@@ -74,6 +86,15 @@ class Item(BaseModel):
   price: float
   tax: float | None = None
   images: list[Image]
+
+# Celery task
+# from celery.result import AsyncResult
+# task = AsyncResult('8e3da1cc-a6aa-42ba-ab72-6ca7544d3730')  # replace with your UUID in Flower
+@celery.task
+def divide(x, y):
+    import time
+    time.sleep(5)
+    return x / y
 
 @app.post('/items', response_model=Item, response_model_exclude={'tax', 'images'}, status_code=status.HTTP_201_CREATED)
 async def create_item(item: Item):
