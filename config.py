@@ -5,8 +5,11 @@ from dotenv import load_dotenv
 class BaseConfig:
     load_dotenv()
 
-    CELERY_BROKER_URL: str = os.environ.get('CELERY_BROKER_URL', 'redis://127.0.0.1:6379/1')
-    CELERY_RESULT_BACKEND: str = os.environ.get('CELERY_RESULT_BACKEND', 'redis://127.0.0.1:6379/2')
+    CELERY_broker_url: str = os.environ.get('CELERY_broker_url', 'redis://127.0.0.1:6379/1')
+    result_backend: str = os.environ.get('result_backend', 'redis://127.0.0.1:6379/2')
+    # https://www.cnblogs.com/baiyifengyun/p/17467861.html
+    broker_connection_retry_on_startup = True
+
 
 class DevelopmentConfig(BaseConfig):
     pass
