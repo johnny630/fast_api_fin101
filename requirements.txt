@@ -123,7 +123,9 @@ pygments==2.18.0
 python-dateutil==2.9.0.post0
     # via celery
 python-dotenv==1.0.1
-    # via uvicorn
+    # via
+    #   -r requirements.in
+    #   uvicorn
 python-jose[cryptography]==3.3.0
     # via -r requirements.in
 python-multipart==0.0.9
